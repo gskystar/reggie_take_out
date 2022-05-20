@@ -27,53 +27,28 @@ public class UserController {
     private UserService userService;
     @Value("${spring.mail.username}")
     private String from;
-//    /**
-//     * 发送手机短信验证码
-//     * @param user
-//     * @return
-//     */
-//    @PostMapping("/sendMsg")
-//    public R<String> sendMsg(@RequestBody User user, HttpSession session){
-//        //获取手机号
-//        String phone = user.getPhone();
-//
-//        if(StringUtils.isNotEmpty(phone)){
-//            //生成随机的4位验证码
-//            String code = ValidateCodeUtils.generateValidateCode(4).toString();
-//            log.info("code={}",code);
-//
-//            //调用阿里云提供的短信服务API完成发送短信
-//            //SMSUtils.sendMessage("瑞吉外卖","",phone,code);
-//
-//            //需要将生成的验证码保存到Session
-//            session.setAttribute(phone,code);
-//
-//            return R.success("手机验证码短信发送成功");
-//        }
-//
-//        return R.error("短信发送失败");
-//    }
-
     /**
-     * 发送邮箱验证码
+     * 发送手机短信验证码
      * @param user
      * @return
      */
     @PostMapping("/sendMsg")
     public R<String> sendMsg(@RequestBody User user, HttpSession session){
-        //获取邮箱
-        String email = user.getEmail();
+        //获取手机号
+        String phone = user.getPhone();
 
-        if(StringUtils.isNotEmpty(email)){
-            //生成随机的6位验证码
-            String code = ValidateCodeUtils.generateValidateCode(6).toString();
+        if(StringUtils.isNotEmpty(phone)){
+            //生成随机的4位验证码
+            String code = ValidateCodeUtils.generateValidateCode(4).toString();
             log.info("code={}",code);
 
             //调用阿里云提供的短信服务API完成发送短信
             //SMSUtils.sendMessage("瑞吉外卖","",phone,code);
-            if (userService.sendEmailCode(code, from, email)) {
+            // 使用邮箱代替手机号
+            boolean b = userService.sendEmailCode(code, from, phone);
+            if (b) {
                 //需要将生成的验证码保存到Session
-                session.setAttribute(email,code);
+                session.setAttribute(phone,code);
 
                 return R.success("手机验证码短信发送成功");
             }
@@ -81,6 +56,34 @@ public class UserController {
 
         return R.error("短信发送失败");
     }
+
+//    /**
+//     * 发送邮箱验证码
+//     * @param user
+//     * @return
+//     */
+//    @PostMapping("/sendMsg")
+//    public R<String> sendMsg(@RequestBody User user, HttpSession session){
+//        //获取邮箱
+//        String email = user.getEmail();
+//
+//        if(StringUtils.isNotEmpty(email)){
+//            //生成随机的6位验证码
+//            String code = ValidateCodeUtils.generateValidateCode(6).toString();
+//            log.info("code={}",code);
+//
+//            //调用阿里云提供的短信服务API完成发送短信
+//            //SMSUtils.sendMessage("瑞吉外卖","",phone,code);
+//            if (userService.sendEmailCode(code, from, email)) {
+//                //需要将生成的验证码保存到Session
+//                session.setAttribute(email,code);
+//
+//                return R.success("手机验证码短信发送成功");
+//            }
+//        }
+//
+//        return R.error("短信发送失败");
+//    }
 
     /**
      * 移动端用户登录
